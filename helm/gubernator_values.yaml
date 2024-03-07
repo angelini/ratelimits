@@ -1,0 +1,10 @@
+gubernator:
+  autoscaling:
+    enabled: false
+
+  serviceAccount:
+    create: true
+
+  replicaCount: 2
+
+  labels: {}

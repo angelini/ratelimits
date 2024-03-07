@@ -1,0 +1,16 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: gubernator-nginx
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: gubernator.local
+      http:
+        paths:
+          - pathType: ImplementationSpecific
+            backend:
+              service:
+                name: gubernator
+                port:
+                  number: 80

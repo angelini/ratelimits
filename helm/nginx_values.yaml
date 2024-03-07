@@ -1,0 +1,14 @@
+controller:
+  config:
+    "plugins": "modify_request"
+
+  extraVolumeMounts:
+    - mountPath: /etc/nginx/lua/plugins/modify_request
+      name: lua-limiter-volume
+      readOnly: true
+
+  extraVolumes:
+    - configMap:
+        defaultMode: 420
+        name: lua-limiter
+      name: lua-limiter-volume

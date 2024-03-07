@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dev
+  labels:
+    app.kubernetes.io/name: dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: dev
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: dev
+    spec:
+      containers:
+        - name: ubuntu
+          image: docker.io/ubuntu:latest
+          command: ["sh", "-c", "tail -f /dev/null"]

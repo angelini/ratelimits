@@ -1,0 +1,19 @@
+apiVersion: k3d.io/v1alpha5
+kind: Simple
+metadata:
+  name: ratelimits
+servers: 1
+agents: 2
+ports:
+  - port: 8011:80
+    nodeFilters:
+      - loadbalancer
+registries:
+  use:
+    - k3d-rlregistry.localhost:8012
+options:
+  k3s:
+    extraArgs:
+      - arg: "--disable=traefik"
+        nodeFilters:
+          - server:*
