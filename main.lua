@@ -26,14 +26,14 @@ function rate_for_host(host)
 end
 
 function _M.rewrite()
-  local httpc = http.new()
-
   local host = remove_port(ngx.req.get_headers()["Host"])
   if not is_ratelimited_host(host) then
     return
   end
 
+  local httpc = http.new()
   local key = "host:" .. host
+  local rate = rate_for_host(host)
 
   local body = {
     requests={
@@ -41,7 +41,8 @@ function _M.rewrite()
         name="requests_per_sec",
         unique_key=key,
         hits=1,
-        limit=rate_for_host(host),
+        limit=rate,
+        burst=math.floor(1.5*rate),
         duration=10000,
         algorithm=1
       }
@@ -62,12 +63,17 @@ function _M.rewrite()
       return
   end
 
-  local res_body = cjson.decode(res.body)
-  local status = res_body.responses[1].status
-  if status == "OVER_LIMIT" then
-    ngx.stauts = 429
+  local result = cjson.decode(res.body).responses[1]
+  if result.status == "OVER_LIMIT" then
     ngx.log(ngx.ERR, "Host over request limit: ", host)
-    ngx.exit(ngx.HTTP_FORBIDDEN)
+
+    ngx.status = ngx.HTTP_TOO_MANY_REQUESTS
+    ngx.header["Content-Type"] = "application/json"
+    ngx.say(cjson.encode({
+      error="Over permitted requests per second for host: " .. host,
+      reset_time=result.reset_time
+    }))
+    return ngx.exit(ngx.HTTP_TOO_MANY_REQUESTS)
   end
 end
 
