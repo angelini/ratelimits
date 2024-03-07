@@ -10,7 +10,7 @@ GUBERNATOR_VERSION := 2.3.2
 .PHONY = k3d-setup k3d-restart
 .PHONY = gubernator-setup
 .PHONY = helm-setup namespaces-setup
-.PHONY = gubernator-deploy nginx-deploy
+.PHONY = nginx-deploy gubernator-deploy dev-deploy
 
 k3d-setup:
 	k3d registry create $(REGISTRY).localhost --port $(REGISTRY_PORT)
